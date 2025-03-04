@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Prediction Result</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #2c3e50, #4ca1af);
+            color: #ffffff;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 0;
+            border-bottom: 2px solid #ffffff;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px; /* Increased width to accommodate fundamentals */
+            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .container h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .container p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .container p strong {
+            color: #ffcc00;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #ff7e5f;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #ff6f4f;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            margin-top: 40px;
+        }
+
+        /* Responsive Canvas */
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Suggestion Percentages */
+        .suggestion-percentages {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .suggestion-percentages h3 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .percentages {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .percentage-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            width: 200px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Specific Colors for Buy, Hold, Sell */
+        .percentage-card.buy {
+            background-color: rgba(39, 174, 96, 0.8); /* Green */
+        }
+
+        .percentage-card.hold {
+            background-color: rgba(127, 140, 141, 0.8); /* Grey */
+        }
+
+        .percentage-card.sell {
+            background-color: rgba(192, 57, 43, 0.8); /* Red */
+        }
+
+        .percentage-card h4 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        .percentage-card p {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        /* Fundamentals Section */
+        .fundamentals {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .fundamentals h3 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .fundamentals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .fundamental-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .fundamental-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: #ffcc00;
+        }
+
+        .fundamental-card p {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .fundamentals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .percentages {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .percentage-card {
+                width: 100%;
+            }
+        }
+    </style>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Stock Prediction Result</h1>
+    </div>
+    <div class="container">
+        <h2>Stock: {{ ticker }}</h2>
+        <p><strong>Prediction Date:</strong> {{ current_date }}</p>
+        <p><strong>Predicted Closing Price for Current Day:</strong> ₹{{ prediction_current }}</p>
+
+        <!-- Heading Above 2 Days Closing Price -->
+        <h3>📈 Predicted Closing Prices for Next Two Days</h3>
+        <!-- Additional Predictions List -->
+        <ul class="predictions-list" style="list-style-type: none; padding: 0; margin-top: 20px; font-size: 1.2em;">
+            <li>
+                <span class="date">{{ day_after_1 }}</span>:
+                <span class="price">₹{{ prediction_after_1 }}</span>
+            </li>
+            <li>
+                <span class="date">{{ day_after_2 }}</span>:
+                <span class="price">₹{{ prediction_after_2 }}</span>
+            </li>
+        </ul>
+        <!-- Actionable Insights at the Top -->
+        <div class="suggestion-percentages">
+            <h3>🔮 Actionable Insights</h3>
+            <div class="percentages">
+                <div class="percentage-card buy">
+                    <h4>Buy</h4>
+                    <p>{{ buy_percentage }}%</p>
+                </div>
+                <div class="percentage-card hold">
+                    <h4>Hold</h4>
+                    <p>{{ hold_percentage }}%</p>
+                </div>
+                <div class="percentage-card sell">
+                    <h4>Sell</h4>
+                    <p>{{ sell_percentage }}%</p>
+                </div>
+            </div>
+        </div>
+
+       <!-- Chart Container Below Actionable Insights -->
+         <div class="chart-container">
+            <canvas id="predictionChart"></canvas>
+        </div>
+
+        <!-- Stock Information -->
+
+
+        <!-- Fundamentals Section at the Bottom -->
+        <div class="fundamentals">
+            <h3>🔍 Stock Fundamentals</h3>
+            <div class="fundamentals-grid">
+                {% for key, value in fundamentals.items() %}
+                <div class="fundamental-card">
+                    <h4>{{ key }}</h4>
+                    <p>
+                        {% if key in ['Market Capitalization', 'Volume', 'Average Volume', 'Number of Employees'] %}
+                            {{ value }}
+                        {% elif key in ['Profit Margin', 'Operating Margin', 'Return on Assets', 'Return on Equity', 'Dividend Yield'] %}
+                            {{ (value * 100) | round(2) if value != 'N/A' and value is not none else value }}%
+                        {% elif key in ['Beta', 'Forward P/E', 'PEG Ratio'] %}
+                            {{ value if value != 'N/A' and value is not none else value }}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <a href="/" class="back-btn">Go Back</a>
+    </div>
+
+    <script>
+        // Parse the JSON data passed from Flask
+        const chartData = JSON.parse('{{ chart_data | safe }}');
+
+        const ctx = document.getElementById('predictionChart').getContext('2d');
+        const predictionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.dates,
+                datasets: [{
+                    label: 'Predicted Closing Price (₹)',
+                    data: chartData.predictions,
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)', // Light yellow
+                    borderColor: 'rgba(255, 206, 86, 1)', // Yellow
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    pointBackgroundColor: 'rgba(255, 206, 86, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 206, 86, 1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Predicted Closing Prices',
+                        color: '#ffffff',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    legend: {
+                        labels: {
+                            color: '#ffffff'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '₹' + context.parsed.y;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date',
+                            color: '#ffffff',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            color: '#ffffff',
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Price (₹)',
+                            color: '#ffffff',
+                            font: {
+                                size: 14
+                            }
+                        },
+                        ticks: {
+                            color: '#ffffff'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        },
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
