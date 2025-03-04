@@ -1,0 +1,6 @@
+[4:48 pm, 04/03/2025] Gayathri: Flask
+yfinance
+scikit-learn
+pandas
+numpy
+finnhub-python 
