@@ -1,0 +1,81 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #8e44ad, #3498db);
+    color: #ffffff;
+    text-align: center;
+}
+
+/* Header */
+.header {
+    padding: 20px;
+    background: #2c3e50;
+    color: #ffffff;
+    font-size: 1.5em;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Container */
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Inputs and Buttons */
+input {
+    padding: 12px;
+    width: calc(100% - 24px);
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 12px 20px;
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: #c0392b;
+}
+
+/* Back Button */
+.back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #3498db;
+    color: #ffffff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.back-btn:hover {
+    background: #2980b9;
+}
+
+/* Error Message */
+.error {
+    color: #ff6b6b;
+    font-weight: bold;
+}
